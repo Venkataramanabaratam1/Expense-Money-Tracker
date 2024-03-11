@@ -1,7 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-// import HomeComponent from "./modules/home";
 import ExpenseTracker from "./module/comp";
+import TawkToWidget from "./module/bot";
+
 
 const Container = styled.div`
   // background-color: lightblue;
@@ -30,7 +31,7 @@ const App = () => {
   return (
     <Container>
       <u><Header>Expense/Money Tracker</Header></u>
-      {/* <HomeComponent /> */}
+      <TawkToWidget/>
       <ExpenseTracker/>
     </Container>
   );
