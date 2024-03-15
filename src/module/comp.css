@@ -53,8 +53,11 @@
   .summary {
     margin-top: 20px;
     padding: 10px;
-    background-color: #bae373;
+    background-color: white;
     border-radius: 8px;
+    background-color: #ccc;
+    /* order: 1; */
+    width: 300px;
   }
   
   .summary h3 {
@@ -170,4 +173,11 @@
     border-radius: 8px;
   }
    
-  
+  .main{
+    display: flex;
+    gap: 2;
+    align-items: start;
+    width: 100%;
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }

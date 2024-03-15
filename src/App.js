@@ -14,23 +14,27 @@ const Container = styled.div`
   height: 110vh;
   width: 99%;
   padding-top: 30px ;
+  //background-image: url("Designer.png");
+  height: 100vh;
   font-family: Montserrat;
 `;
 
 const Header = styled.div`
-  // background-color: white;
-  color: #0d1d2c;
+  background-color: #3498db;  // Blue background color
+  color: white;  // White text color
   display: flex;
   flex-direction: row;
   align-items: center;
   padding: 22px;
   font-size: 25px;
   font-weight: bold;
+  border-radius: 10px;  // Rounded rectangle shape
 `;
+
 const App = () => {
   return (
     <Container>
-      <u><Header>Expense/Money Tracker</Header></u>
+      <Header>Expense/Money Tracker</Header>
       <TawkToWidget/>
       <ExpenseTracker/>
     </Container>

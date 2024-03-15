@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import styled from "styled-components";
 import './comp.css';
+import CountUp from 'react-countup';
+import { Col, Row, Statistic } from 'antd';
+import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
 
-
+const formatter = (value) => <CountUp end={value} separator="," />;
 const Container = styled.div`
-  background-color: #bae373;
+  background-color: #00000014;
   color: #0d1d2c;
   display: flex;
   flex-direction: column;
@@ -14,6 +17,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: space-between;
   border-radius: 8px;
+  order:-1
 `;
 
 function ExpenseTracker() {
@@ -76,17 +80,57 @@ function ExpenseTracker() {
   );
 
   return (
-    <div>
+    <div className='main'>
       <div className="summary">
-        <h3 align="center">Summary</h3>
+        <Row gutter={16} justify="center">
+        <Col span={12} justify="center">
+      <Statistic 
+      title="Available Balance:" 
+      value={availableBalance}
+      precision={2}
+      valueStyle={{
+        color: availableBalance >= 0 ? '#3f8600' : '#cf1322', // Green for positive, red for negative
+      }}
+      suffix={availableBalance >= 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+      prefix="₹"
+      formatter={formatter} />
+    </Col>
+        </Row>
+      <Row gutter={16}>
+    <Col span={12}>
+      <Statistic 
+      title="Total Income:" 
+      value={totalIncome}
+      precision={2}
+      valueStyle={{
+        color: '#3f8600',
+      }}
+      suffix={<ArrowUpOutlined />}
+      prefix="₹"
+      formatter={formatter} />
+    </Col>
+    <Col span={12}>
+      <Statistic 
+      title="Total Expense:" 
+      value={totalExpense} 
+      precision={2}
+      valueStyle={{
+        color: 'red',
+      }}
+      suffix={<ArrowDownOutlined />}
+      prefix="₹"
+      formatter={formatter} />
+    </Col>
+  </Row>
+        {/* <h3 align="center">Summary</h3>
         <b><p>Available Balance: ₹{availableBalance}</p></b>
         <p>Total Income: ₹{totalIncome}</p>
-        <p>Total Expense: ₹{totalExpense}</p>
+        <p>Total Expense: ₹{totalExpense}</p> */}
       </div>
       <br/>
 
-      <h3>Add Your Transaction</h3>
      <Container>
+      <h3>Add Your Transaction</h3>
      <div>
        <h3>New Transaction</h3>
        <input
@@ -114,7 +158,7 @@ function ExpenseTracker() {
      <div align="center"><button className="button" onClick={addTransaction}>Add Transaction</button></div>
      <br/>
     </div>
-    </Container><br/>
+    </Container>
 
       <div className="transactions">
         <h3>Your Transactions</h3>
