@@ -4,7 +4,7 @@ import './comp.css';
 import CountUp from 'react-countup';
 import { Col, Row, Statistic, Input, Select, Button, Switch, message } from 'antd';
 import { ArrowDownOutlined, ArrowUpOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import Chart from 'chart.js/auto';
+import Chart from 'chart.js';
 
 
 const { Option } = Select;
