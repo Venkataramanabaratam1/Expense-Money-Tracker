@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import  { useEffect } from 'react';
 
 function TawkToWidget() {
   useEffect(() => {
     // ComponentDidMount equivalent
-    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    // var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
     (function(){
       var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
       s1.async=true;
