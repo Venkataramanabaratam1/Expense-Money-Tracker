@@ -3,6 +3,7 @@
     margin: 0 auto;
     padding: 20px;
     background-color: #f4f4f4;
+    background-color: #e73109;
     border-radius: 8px;
   }
 
@@ -49,15 +50,13 @@
     margin-right: 10px;
   }
   
-
   .summary {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: white;
+    text-align: center;
+    border: 1px solid #ccc;
+    padding: 20px;
     border-radius: 8px;
-    background-color: #ccc;
-    /* order: 1; */
-    width: 300px;
+    background-color: #00000014;
+    margin-bottom: 20px;
   }
   
   .summary h3 {
@@ -67,6 +66,14 @@
   .summary p {
     margin: 5px 0;
   }
+  
+  .summary b {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  
   
 
   .transactions {
@@ -173,11 +180,24 @@
     border-radius: 8px;
   }
    
-  .main{
-    display: flex;
-    gap: 2;
-    align-items: start;
-    width: 100%;
-    justify-content: space-around;
-    flex-wrap: wrap;
+  .buttons button {
+    margin-left: 5px;
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    border: none;
+    color: #130101;
   }
+  
+  .buttons .delete-button {
+    background-color: #c31019 !important;
+    color: #fff !important;
+  }
+  
+  .buttons .edit-button {
+    background-color: #1890ff !important;
+    color: #fff !important;
+  }
+  
+  
