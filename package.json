@@ -16,14 +16,9 @@
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "styled-components": "^6.1.8",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "chart.js": "^3.5.1"
   },
-  {
-  "dependencies": {
-    "chart.js": "^3.5.1", // Replace with the latest version
-    // other dependencies
-  }
-},
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
