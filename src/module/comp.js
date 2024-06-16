@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import styled from "styled-components";
 import './comp.css';
 import CountUp from 'react-countup';
-import { Col, Row, Statistic, Input, Select, Button } from 'antd';
+import { Col, Row, Statistic, Input, Select, Button, message } from 'antd';
 import Chart from 'chart.js/auto';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable'; 
+import 'jspdf-autotable';
+import { CSVLink } from 'react-csv';
 
 const { Option } = Select;
 
@@ -53,6 +54,7 @@ function ExpenseTracker() {
   const [inputDescription, setInputDescription] = useState('');
   const [inputAmount, setInputAmount] = useState('');
   const [transactionType, setTransactionType] = useState('expense');
+  const [category, setCategory] = useState('');
   const [searchText, setSearchText] = useState('');
   const [chartData, setChartData] = useState({});
 
@@ -113,17 +115,21 @@ function ExpenseTracker() {
   const totalExpense = calculateTotal('expense');
 
   const addTransaction = () => {
-    if (inputDescription.trim() !== '' && inputAmount !== '') {
+    if (inputDescription.trim() !== '' && inputAmount !== '' && category.trim() !== '') {
       const newTransaction = {
         id: Math.floor(Math.random() * 100000),
         description: inputDescription,
         amount: parseFloat(inputAmount),
-        type: transactionType
+        type: transactionType,
+        category: category
       };
       setTransactions([...transactions, newTransaction]);
       setInputDescription('');
       setInputAmount('');
       setTransactionType('expense');
+      setCategory('');
+    } else {
+      message.error('Please fill all fields');
     }
   };
 
@@ -157,7 +163,8 @@ function ExpenseTracker() {
     { title: 'S.No', dataIndex: 'id' },
     { title: 'Name', dataIndex: 'description' },
     { title: 'Money', dataIndex: 'amount' },
-    { title: 'Type', dataIndex: 'type' }
+    { title: 'Type', dataIndex: 'type' },
+    { title: 'Category', dataIndex: 'category' }
   ];
 
   // Function to download transactions as a PDF file
@@ -169,7 +176,8 @@ function ExpenseTracker() {
       index + 1,
       transaction.description,
       transaction.amount,
-      transaction.type
+      transaction.type,
+      transaction.category
     ]);
 
     doc.autoTable({
@@ -178,6 +186,18 @@ function ExpenseTracker() {
     });
     doc.save('transactions.pdf');
   };
+
+  // Create data array for CSV export
+  const csvData = transactions.map((transaction, index) => ({
+    id: index + 1,
+    description: transaction.description,
+    amount: transaction.amount,
+    type: transaction.type,
+    category: transaction.category
+  }));
+
+  // CSV headers
+  const csvHeaders = tableColumns.map(column => ({ label: column.title, key: column.dataIndex }));
 
   return (
     <div className="">
@@ -200,6 +220,11 @@ function ExpenseTracker() {
             <Option value="income">Income</Option>
             <Option value="expense">Expense</Option>
           </Select>
+          <Input
+            placeholder="Enter Category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          />
           <Button type="primary" onClick={addTransaction}>Add Transaction</Button>
         </InputContainer>
 
@@ -214,7 +239,6 @@ function ExpenseTracker() {
               valueStyle={{
                 color: availableBalance >= 0 ? '#3f8600' : '#cf1322',
               }}
-              suffix={availableBalance >= 0 ? '⬆️' : '⬇️'}
               prefix="₹"
               formatter={formatter}
             />
@@ -226,7 +250,6 @@ function ExpenseTracker() {
               precision={2}
               valueStyle={{ color: '#3f8600' }}
               prefix="₹"
-              suffix="⬆️"
               formatter={formatter}
             />
           </Col>
@@ -237,7 +260,15 @@ function ExpenseTracker() {
               precision={2}
               valueStyle={{ color: '#cf1322' }}
               prefix="₹"
-              suffix="⬇️"
+              formatter={formatter}
+            />
+          </Col>
+          <Col span={8}>
+            <Statistic
+              title="Total Transactions:"
+              value={transactions.length}
+              precision={0}
+              valueStyle={{ color: '#FF0000' }}
               formatter={formatter}
             />
           </Col>
@@ -256,7 +287,7 @@ function ExpenseTracker() {
         <TransactionsList>
           {filteredTransactions.map((transaction) => (
             <TransactionItem key={transaction.id} className={transaction.type}>
-              <span>{transaction.description} - ₹{transaction.amount}</span>
+              <span>{transaction.description} - ₹{transaction.amount} ({transaction.category})</span>
               <div className="buttons">
                 <Button onClick={() => deleteTransaction(transaction.id)}>Delete</Button>
                 <Button onClick={() => {
@@ -271,15 +302,12 @@ function ExpenseTracker() {
           ))}
         </TransactionsList>
 
-        <br/><br/>
-        <h3>Visual Representation of your Transactions</h3>
-        <canvas id="transactionChart"></canvas>
-
-        {/* Download button */}
-        <Button type="primary" onClick={downloadTransactions}>Download Transactions</Button>
-
+        <br/>
+        <Button type="primary" onClick={downloadTransactions}>Download PDF</Button> &nbsp;
+        <CSVLink data={csvData} headers={csvHeaders} filename={"transactions.csv"}>
+          <Button type="primary">Download CSV</Button>
+        </CSVLink>
       </Container>
-      <br/>
     </div>
   );
 }
