@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import styled from "styled-components";
 import './comp.css';
 import CountUp from 'react-countup';
-import { Col, Row, Statistic, Input, Select, Button, Switch, message } from 'antd';
-import { ArrowDownOutlined, ArrowUpOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import Chart from 'chart.js';
-
+import { Col, Row, Statistic, Input, Select, Button } from 'antd';
+import Chart from 'chart.js/auto';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable'; 
 
 const { Option } = Select;
 
@@ -25,12 +25,6 @@ const InputContainer = styled.div`
     margin-right: 10px;
   }
 `;
-
-// const InputContainer = styled.div`
-//   margin-bottom: 20px;
-//   display: flex;
-//   align-items: center;
-// `;
 
 const TransactionsList = styled.ul`
   list-style: none;
@@ -61,8 +55,6 @@ function ExpenseTracker() {
   const [transactionType, setTransactionType] = useState('expense');
   const [searchText, setSearchText] = useState('');
   const [chartData, setChartData] = useState({});
-  const [budget, setBudget] = useState(0);
-  const [budgetEnabled, setBudgetEnabled] = useState(false); // State to manage budget enable/disable
 
   useEffect(() => {
     const chartLabels = transactions.map(transaction => transaction.description);
@@ -109,17 +101,6 @@ function ExpenseTracker() {
     }
   }, [chartData]);
   
-  const [budgetInput, setBudgetInput] = useState(budget.toString()); // State to manage the input value for budget
-  // Function to handle changes to the input value for budget
-  const handleBudgetInputChange = (e) => {
-    setBudgetInput(e.target.value); // Update the input value
-  };
-
-  // Function to handle the click event for updating the budget
-  const handleUpdateBudget = () => {
-    setBudget(parseFloat(budgetInput)); // Update the budget value
-  };
-
   const calculateTotal = (type) => {
     return transactions.reduce((total, transaction) => {
       if (transaction.type === type) {
@@ -130,17 +111,6 @@ function ExpenseTracker() {
   };
 
   const totalExpense = calculateTotal('expense');
-
-  useEffect(() => {
-    if (totalExpense > budget) {
-      message.warning({
-        content: 'Your expenses have exceeded the budget!',
-        icon: <ExclamationCircleOutlined />,
-        duration: 5,
-      });
-    }
-  }, [totalExpense, budget]);
-
 
   const addTransaction = () => {
     if (inputDescription.trim() !== '' && inputAmount !== '') {
@@ -176,22 +146,38 @@ function ExpenseTracker() {
     setTransactions(updatedTransactions);
   };
 
-  // const calculateTotal = (type) => {
-  //   return transactions.reduce((total, transaction) => {
-  //     if (transaction.type === type) {
-  //       return total + transaction.amount;
-  //     }
-  //     return total;
-  //   }, 0);
-  // };
-
-  // const totalExpense = calculateTotal('expense');
   const totalIncome = calculateTotal('income');
   const availableBalance = totalIncome - totalExpense;
 
   const filteredTransactions = transactions.filter(transaction =>
     transaction.description.toLowerCase().includes(searchText.toLowerCase())
   );
+
+  const tableColumns = [
+    { title: 'S.No', dataIndex: 'id' },
+    { title: 'Name', dataIndex: 'description' },
+    { title: 'Money', dataIndex: 'amount' },
+    { title: 'Type', dataIndex: 'type' }
+  ];
+
+  // Function to download transactions as a PDF file
+  const downloadTransactions = () => {
+    const doc = new jsPDF();
+
+    // Convert transactions data to rows
+    const tableRows = transactions.map((transaction, index) => [
+      index + 1,
+      transaction.description,
+      transaction.amount,
+      transaction.type
+    ]);
+
+    doc.autoTable({
+      head: [tableColumns.map(column => column.title)],
+      body: tableRows
+    });
+    doc.save('transactions.pdf');
+  };
 
   return (
     <div className="">
@@ -228,7 +214,7 @@ function ExpenseTracker() {
               valueStyle={{
                 color: availableBalance >= 0 ? '#3f8600' : '#cf1322',
               }}
-              suffix={availableBalance >= 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+              suffix={availableBalance >= 0 ? '⬆️' : '⬇️'}
               prefix="₹"
               formatter={formatter}
             />
@@ -240,7 +226,7 @@ function ExpenseTracker() {
               precision={2}
               valueStyle={{ color: '#3f8600' }}
               prefix="₹"
-              suffix={<ArrowUpOutlined />}
+              suffix="⬆️"
               formatter={formatter}
             />
           </Col>
@@ -251,7 +237,7 @@ function ExpenseTracker() {
               precision={2}
               valueStyle={{ color: '#cf1322' }}
               prefix="₹"
-              suffix={<ArrowDownOutlined />}
+              suffix="⬇️"
               formatter={formatter}
             />
           </Col>
@@ -259,18 +245,6 @@ function ExpenseTracker() {
         
         <br/>
         
-        <h3>Budget </h3>
-        <h4>Enable/Disable Budget Option : <Switch checked={budgetEnabled} onChange={(checked) => setBudgetEnabled(checked)} /></h4>
-        <h4>Enter your Budget here</h4>
-        <Input
-          type="number"
-          placeholder="Set Your Budget"
-          value={budgetInput}
-          onChange={handleBudgetInputChange}
-          disabled={!budgetEnabled} // Disable input if budget is not enabled
-        />
-        <Button type="primary" onClick={handleUpdateBudget}>Update Budget</Button>
-        <br/> <br/>
 
         <h3>Your Transactions</h3>
         <Input
@@ -300,6 +274,9 @@ function ExpenseTracker() {
         <br/><br/>
         <h3>Visual Representation of your Transactions</h3>
         <canvas id="transactionChart"></canvas>
+
+        {/* Download button */}
+        <Button type="primary" onClick={downloadTransactions}>Download Transactions</Button>
 
       </Container>
       <br/>
